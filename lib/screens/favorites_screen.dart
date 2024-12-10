@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'news_detail_screen.dart';
+import '../models/news.dart';
 
 class FavoritesScreen extends StatelessWidget {
-  final List<String> favoriteNews; // 전체 즐겨찾기된 뉴스 리스트
-  final ValueChanged<String> onFavoriteToggle; // 즐겨찾기 상태를 변경하는 콜백
+  final List<News> favoriteNews; // 전체 즐겨찾기된 뉴스 리스트
+  final ValueChanged<News> onFavoriteToggle; // 즐겨찾기 상태를 변경하는 콜백
 
   const FavoritesScreen({
     super.key,
@@ -55,7 +56,7 @@ class FavoritesScreen extends StatelessWidget {
                           },
                         ),
                         title: Text(
-                          news,
+                          news.title,
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w500),
                           overflow: TextOverflow.ellipsis,
@@ -66,7 +67,7 @@ class FavoritesScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  NewsDetailScreen(title: news),
+                                  NewsDetailScreen(news: news),
                             ),
                           );
                         },

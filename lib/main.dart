@@ -5,6 +5,7 @@ import 'screens/chatbot_screen.dart';
 import 'screens/quiz_screen.dart';
 import 'screens/mypage_screen.dart';
 import 'screens/splash_screen.dart';
+import 'models/news.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,22 +40,22 @@ class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
   // 즐겨찾기 상태 관리
-  final Set<String> favoriteNews = {};
+  final Set<News> favoriteNews = {};
 
   // 즐겨찾기 상태를 토글하는 함수
-  void _toggleFavorite(String news) {
+  void _toggleFavorite(News news) {
     setState(() {
-      if (favoriteNews.contains(news.trim())) {
-        favoriteNews.remove(news.trim());
-        print('Removed from favorites: $news'); // 제거된 뉴스 제목 출력
+      if (favoriteNews.contains(news)) {
+        favoriteNews.remove(news); // 즐겨찾기에서 제거
+        print('Removed from favorites: ${news.title}');
       } else {
-        favoriteNews.add(news.trim());
-        print('Added to favorites: $news'); // 추가된 뉴스 제목 출력
+        favoriteNews.add(news); // 즐겨찾기에 추가
+        print('Added to favorites: ${news.title}');
       }
     });
 
     // 현재 전체 즐겨찾기 리스트 출력
-    print('Current favoriteNews: $favoriteNews');
+    print('Current favoriteNews: ${favoriteNews.map((n) => n.title).toList()}');
   }
 
   @override
@@ -62,12 +63,12 @@ class _MainNavigationState extends State<MainNavigation> {
     // 동적으로 최신 상태를 반영하는 탭 화면 생성
     final screens = [
       HomeScreen(
-        favoriteNews: favoriteNews.toList(),
-        onFavoriteToggle: _toggleFavorite,
+        favoriteNews: favoriteNews.toList(), // List<News> 전달
+        onFavoriteToggle: _toggleFavorite, // 즐겨찾기 상태 토글 함수
       ),
       FavoritesScreen(
-        favoriteNews: favoriteNews.toList(),
-        onFavoriteToggle: _toggleFavorite,
+        favoriteNews: favoriteNews.toList(), // List<News> 전달
+        onFavoriteToggle: _toggleFavorite, // 즐겨찾기 상태 토글 함수
       ),
       ChatbotScreen(
         onClose: () {
