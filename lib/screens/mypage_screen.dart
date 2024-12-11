@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'personal_info_screen.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
@@ -81,7 +82,11 @@ class MyPageScreen extends StatelessWidget {
             ),
             onTap: () {
               // 개인 정보 관리 페이지로 이동
-              print("개인 정보 관리 선택");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MyPagePersonalInfo()),
+              );
             },
           ),
           const Divider(thickness: 1, height: 1, color: Colors.black12),
@@ -109,7 +114,7 @@ class MyPageScreen extends StatelessWidget {
               foregroundColor: Colors.black,
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
             child: const Text("로그아웃"),
