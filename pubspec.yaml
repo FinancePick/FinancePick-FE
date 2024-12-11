@@ -73,6 +73,8 @@ flutter:
   assets:
     - assets/logo.png
 
+    - assets/quiz_data.json
+
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 

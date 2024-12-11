@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'quiz_detail_screen.dart';
 
 class QuizScreen extends StatelessWidget {
   const QuizScreen({super.key});
@@ -115,36 +116,6 @@ class QuizScreen extends StatelessWidget {
           child: const Text("Go"),
         ),
       ],
-    );
-  }
-}
-
-class QuizDetailScreen extends StatelessWidget {
-  final String level;
-
-  const QuizDetailScreen({super.key, required this.level});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          "$level Quiz",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-      ),
-      body: Center(
-        child: Text(
-          "Welcome to $level Quiz!",
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }
