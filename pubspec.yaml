@@ -75,6 +75,8 @@ flutter:
 
     - assets/quiz_data.json
 
+    - assets/today_word.json
+
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
