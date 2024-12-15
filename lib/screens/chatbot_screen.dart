@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ChatbotScreen extends StatefulWidget {
@@ -22,8 +23,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
 
-  final String _apiKey =
-      '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';
+  String get _apiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
 
   Future<void> _sendToChatGPT(String userMessage) async {
     const String apiUrl = "https://api.openai.com/v1/chat/completions";

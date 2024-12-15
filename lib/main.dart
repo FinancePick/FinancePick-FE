@@ -6,8 +6,11 @@ import 'screens/quiz_screen.dart';
 import 'screens/mypage_screen.dart';
 import 'screens/splash_screen.dart';
 import 'models/news.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 비동기 처리를 위해 필요
+  await dotenv.load(fileName: "assets/.env"); // 파일 이름 확인
   runApp(const MyApp());
 }
 
