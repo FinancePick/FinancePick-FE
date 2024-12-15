@@ -135,4 +135,34 @@ class ApiService {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>> fetchUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    if (token == null) {
+      throw Exception('인증 토큰이 없습니다. 로그인 해주세요.');
+    }
+
+    final url = Uri.parse('$baseUrl/myService');
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        print("유저 정보: $data");
+        return data; // JSON 데이터를 Map 형태로 반환
+      } else {
+        throw Exception('유저 정보를 가져오지 못했습니다. 상태 코드: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('오류 발생: $e');
+    }
+  }
 }

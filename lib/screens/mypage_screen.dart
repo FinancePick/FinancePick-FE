@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
 import 'personal_info_screen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
@@ -12,11 +14,13 @@ class MyPageScreen extends StatefulWidget {
 
 class _MyPageScreenState extends State<MyPageScreen> {
   String _userName = ''; // 이메일에서 @ 앞까지 추출한 값 저장
+  String _userLevel = '로딩 중...'; // 서버에서 가져올 유저 레벨
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    _loadUserLevel();
   }
 
   // 저장된 이메일에서 이름 부분만 가져오는 함수
@@ -32,6 +36,48 @@ class _MyPageScreenState extends State<MyPageScreen> {
     setState(() {
       _userName = name;
     });
+  }
+
+  // 서버에서 유저 레벨 가져오는 함수
+  Future<void> _loadUserLevel() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token'); // 저장된 토큰 가져오기
+
+    if (token == null) {
+      print("토큰이 없습니다. 로그인 상태를 확인해주세요.");
+      return;
+    }
+
+    final url = Uri.parse('http://138.2.123.184/api/auth/myService');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("서버에서 가져온 유저 데이터: $data");
+
+        setState(() {
+          _userLevel = data['level'] ?? '알 수 없음'; // 레벨 값 설정
+        });
+      } else {
+        print("유저 레벨 가져오기 실패: ${response.statusCode}");
+        setState(() {
+          _userLevel = '불러오기 실패';
+        });
+      }
+    } catch (e) {
+      print("오류 발생: $e");
+      setState(() {
+        _userLevel = '오류 발생';
+      });
+    }
   }
 
   // 로그아웃 함수
@@ -89,6 +135,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
             ),
           ),
           const SizedBox(height: 24),
+          // Level 표시
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
@@ -96,16 +143,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
               border: Border.all(color: Colors.black12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Level:",
                   style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
                 Text(
-                  "Beginner",
-                  style: TextStyle(
+                  _userLevel, // 서버에서 가져온 레벨 표시
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,

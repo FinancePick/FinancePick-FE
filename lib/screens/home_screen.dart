@@ -52,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return wordService.fetchTodayWords(); // 오늘의 단어를 가져오는 서비스 호출
   }
 
-  // 오늘의 단어 팝업을 띄우는 함수
   void _showTodayWordDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -69,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context); // 모달 닫기
+                      Navigator.pop(context);
                     },
                     child: const Text("확인"),
                   ),
@@ -82,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context); // 모달 닫기
+                      Navigator.pop(context);
                     },
                     child: const Text("확인"),
                   ),
@@ -124,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      wordData['word'] ?? '단어 없음', // JSON에서 가져온 'word' 데이터
+                      wordData['word'] ?? '단어 없음',
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -133,18 +132,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      wordData['description'] ??
-                          '설명 없음', // JSON에서 가져온 'description' 데이터
+                      wordData['description'] ?? '설명 없음',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black54,
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '레벨: ${wordData['level'] ?? '레벨 없음'}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context); // 모달 닫기
+                        Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
