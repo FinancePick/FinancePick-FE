@@ -1,8 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'login_screen.dart';
 import 'personal_info_screen.dart';
 
-class MyPageScreen extends StatelessWidget {
+class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
+
+  @override
+  State<MyPageScreen> createState() => _MyPageScreenState();
+}
+
+class _MyPageScreenState extends State<MyPageScreen> {
+  String _userName = ''; // 이메일에서 @ 앞까지 추출한 값 저장
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  // 저장된 이메일에서 이름 부분만 가져오는 함수
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('user_email') ?? 'user@domain.com';
+
+    print("SharedPreferences에서 가져온 이메일: $email");
+
+    // @ 앞부분만 추출
+    final name = email.split('@')[0];
+
+    setState(() {
+      _userName = name;
+    });
+  }
+
+  // 로그아웃 함수
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token'); // 저장된 토큰 삭제
+    await prefs.remove('user_email'); // 저장된 이메일 삭제
+    print("로그아웃 성공: 토큰 및 이메일 삭제됨");
+
+    // 로그인 화면으로 이동
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (Route<dynamic> route) => false, // 모든 이전 화면 제거
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,25 +73,22 @@ class MyPageScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         children: [
           const SizedBox(height: 40),
-          // 프로필 섹션
           const CircleAvatar(
             radius: 50,
             backgroundColor: Colors.black12,
             child: Icon(Icons.person, size: 50, color: Colors.black54),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "홍길동 님",
+          Text(
+            "$_userName 님", // 추출한 이름 표시
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-
           const SizedBox(height: 24),
-          // Level 표시
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
@@ -73,7 +115,6 @@ class MyPageScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 60),
-          // 설정 메뉴
           const Divider(thickness: 1, height: 1, color: Colors.black12),
           ListTile(
             title: const Text(
@@ -81,7 +122,6 @@ class MyPageScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.black),
             ),
             onTap: () {
-              // 개인 정보 관리 페이지로 이동
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -90,27 +130,11 @@ class MyPageScreen extends StatelessWidget {
             },
           ),
           const Divider(thickness: 1, height: 1, color: Colors.black12),
-          ListTile(
-            title: const Text(
-              "앱 설정",
-              style: TextStyle(fontSize: 16, color: Colors.black),
-            ),
-            onTap: () {
-              // 앱 설정 페이지로 이동
-              print("앱 설정 선택");
-            },
-          ),
-
-          const Divider(thickness: 1, height: 1, color: Colors.black12),
           const SizedBox(height: 100),
-          // 로그아웃 버튼
           ElevatedButton(
-            onPressed: () {
-              // 로그아웃 로직 추가
-              print("로그아웃 실행");
-            },
+            onPressed: () => _logout(), // 로그아웃 함수 호출
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey[200], // 연한 회색
+              backgroundColor: Colors.grey[200],
               foregroundColor: Colors.black,
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(

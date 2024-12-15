@@ -1,9 +1,58 @@
 import 'package:flutter/material.dart';
-import 'signup_screen.dart';
 import '../main.dart';
+import '../repositories/api_services.dart';
+import 'signup_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+
+  bool _isLoading = false; // 로딩 상태 관리
+
+  // 로그인 함수
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("이메일과 비밀번호를 입력해주세요.")),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final success = await _apiService.login(email, password);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("로그인 실패. 이메일과 비밀번호를 확인해주세요.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +79,7 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 hintText: "email@domain.com",
                 border: OutlineInputBorder(
@@ -40,6 +90,7 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "password",
@@ -50,27 +101,22 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                // 로그인 성공 시 MainNavigation으로 이동
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MainNavigation()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                "로그인하기",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
+            _isLoading
+                ? const CircularProgressIndicator() // 로딩 표시
+                : ElevatedButton(
+                    onPressed: _handleLogin,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      "로그인하기",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
             const SizedBox(height: 16),
             const Text(
               "or",
@@ -79,7 +125,6 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 16),
             OutlinedButton(
               onPressed: () {
-                // 회원가입 화면으로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const SignUpScreen()),

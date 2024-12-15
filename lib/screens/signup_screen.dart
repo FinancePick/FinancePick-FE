@@ -1,7 +1,43 @@
 import 'package:flutter/material.dart';
+import '../repositories/api_services.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+
+  final bool _isLoading = false; // 로딩 상태 관리
+
+  // 회원가입 처리 함수
+  Future<void> _handleSignUp() async {
+    final username = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    print("보낸 데이터: username: $username, password: $password");
+
+    final success = await _apiService.signUp(username, password);
+
+    print("회원가입 결과: $success");
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("회원가입 성공! 로그인 화면으로 이동합니다.")),
+      );
+      Navigator.pop(context); // 로그인 화면으로 이동
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("회원가입 실패. 다시 시도해주세요.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +49,7 @@ class SignUpScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // 이전 화면으로 이동
+            Navigator.pop(context);
           },
         ),
       ),
@@ -22,71 +58,65 @@ class SignUpScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 빈공간을 줄이기 위해 추가된 SizedBox 조정
             const SizedBox(height: 16),
             const Text(
               "가입하기",
               style: TextStyle(
                 fontSize: 36,
-                fontWeight: FontWeight.w900, // 더 굵게 설정
+                fontWeight: FontWeight.w900,
                 color: Colors.black,
               ),
             ),
-            const SizedBox(height: 16), // 줄인 빈공간
+            const SizedBox(height: 16),
             TextField(
+              controller: _nameController,
               decoration: InputDecoration(
                 labelText: "이름",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.black),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: "이메일",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.black),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: "비밀번호",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.visibility_off, color: Colors.black54),
-                  onPressed: () {
-                    // 비밀번호 가리기/보이기 구현 가능
-                  },
-                ),
+                suffixIcon:
+                    const Icon(Icons.visibility_off, color: Colors.black54),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.black),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                // 회원가입 버튼 클릭 시 로그인 화면으로 이동
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                "회원 가입",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
+            _isLoading
+                ? const Center(child: CircularProgressIndicator()) // 로딩 인디케이터
+                : ElevatedButton(
+                    onPressed: _handleSignUp,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      "회원 가입",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
           ],
         ),
       ),
