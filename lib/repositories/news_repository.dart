@@ -1,22 +1,42 @@
 import 'package:dio/dio.dart';
+import 'dart:convert';
 import '../models/news.dart';
 
 class NewsRepository {
   final Dio _dio = Dio();
 
-  Future<List<News>> fetchNews() async {
-    const apiUrl =
-        'https://newsapi.org/v2/top-headlines?country=us&apiKey=66140dcecc614377a289e7f6e8c7c030';
+  final String _clientId = ''; // 네이버 Client ID
+  final String _clientSecret = ''; // 네이버 Client Secret
+
+  Future<List<News>> fetchNews(String query, {int display = 20}) async {
+    final encodedQuery = Uri.encodeComponent(query.isEmpty ? "경제" : query);
+
+    final apiUrl =
+        'https://openapi.naver.com/v1/search/news.json?query=$encodedQuery&display=$display';
 
     try {
-      final response = await _dio.get(apiUrl);
-      final articles = response.data['articles'] as List<dynamic>;
+      print("Request URL: $apiUrl");
+      print(
+          "Request Headers: X-Naver-Client-Id=$_clientId, X-Naver-Client-Secret=$_clientSecret");
 
-      // articles를 News 객체 리스트로 변환
-      return articles
+      final response = await _dio.get(
+        apiUrl,
+        options: Options(headers: {
+          'X-Naver-Client-Id': _clientId,
+          'X-Naver-Client-Secret': _clientSecret,
+        }),
+      );
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Data: ${response.data}');
+
+      final items = response.data['items'] as List<dynamic>;
+
+      return items
           .map((json) => News.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
+      print('Error occurred: $e');
       throw Exception('Failed to fetch news: $e');
     }
   }

@@ -1,3 +1,5 @@
+import 'package:html_unescape/html_unescape.dart';
+
 class News {
   final String title; // 뉴스 제목
   final String description; // 뉴스 요약
@@ -14,10 +16,11 @@ class News {
 
   // JSON 데이터를 Dart 객체로 변환
   factory News.fromJson(Map<String, dynamic> json) {
+    final unescape = HtmlUnescape();
     return News(
-      title: json['title'] ?? "No Title",
-      description: json['description'] ?? "No Description",
-      url: json['url'] ?? "",
+      title: unescape.convert(json['title'] ?? "No Title"),
+      description: unescape.convert(json['description'] ?? "No Description"),
+      url: json['link'] ?? "",
     );
   }
 
