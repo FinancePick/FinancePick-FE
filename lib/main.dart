@@ -20,10 +20,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: '경제콕',
       theme: ThemeData(
+        brightness: Brightness.light, // 기본 테마 (라이트 모드)
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
         canvasColor: Colors.white,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark, // 다크 모드 테마
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.black,
+        canvasColor: Colors.black,
+      ),
+      themeMode: ThemeMode.system, // 시스템 설정에 따라 변경
       home: const SplashScreen(),
     );
   }
