@@ -33,7 +33,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     String? newsUrl = widget.news.url;
 
     // URL이 비어있거나 null인지 확인
-    if (newsUrl == null || newsUrl.isEmpty) {
+    if (newsUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("유효한 뉴스 링크가 없습니다.")),
       );

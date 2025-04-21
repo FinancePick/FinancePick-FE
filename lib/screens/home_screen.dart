@@ -121,11 +121,18 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text("오늘의 경제콕",
+        centerTitle: false, // 왼쪽 정렬 유지
+        title: const Padding(
+          padding: EdgeInsets.only(left: 7, top: 30), // ← 원하는 여백
+          child: Text(
+            "오늘의 경제콕",
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 30)),
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 30,
+            ),
+          ),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -208,30 +215,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNewsItem(BuildContext context, News news) {
-    final ScrollController _scrollController = ScrollController();
-    Timer? _timer;
+    final ScrollController scrollController = ScrollController();
+    Timer? timer;
 
-    void _startScrolling() {
+    void startScrolling() {
       const scrollDuration = Duration(milliseconds: 50);
       const scrollIncrement = 2.0;
 
-      _timer = Timer.periodic(scrollDuration, (timer) {
-        if (_scrollController.hasClients) {
-          final maxScrollExtent = _scrollController.position.maxScrollExtent;
-          final currentScroll = _scrollController.offset;
+      timer = Timer.periodic(scrollDuration, (timer) {
+        if (scrollController.hasClients) {
+          final maxScrollExtent = scrollController.position.maxScrollExtent;
+          final currentScroll = scrollController.offset;
 
           if (currentScroll < maxScrollExtent) {
-            _scrollController.jumpTo(currentScroll + scrollIncrement);
+            scrollController.jumpTo(currentScroll + scrollIncrement);
           } else {
-            _scrollController.jumpTo(0.0);
+            scrollController.jumpTo(0.0);
           }
         }
       });
     }
 
-    void _stopScrolling() {
-      _timer?.cancel();
-      _scrollController.jumpTo(0.0);
+    void stopScrolling() {
+      timer?.cancel();
+      scrollController.jumpTo(0.0);
     }
 
     final isFavorite =
@@ -244,8 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
           MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news)),
         );
       },
-      onLongPress: _startScrolling,
-      onLongPressEnd: (details) => _stopScrolling(),
+      onLongPress: startScrolling,
+      onLongPressEnd: (details) => stopScrolling(),
       child: ListTile(
         leading: IconButton(
           icon: Icon(
@@ -256,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          controller: _scrollController,
+          controller: scrollController,
           physics: const NeverScrollableScrollPhysics(),
           child: Text(
             news.title,

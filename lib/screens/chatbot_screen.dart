@@ -23,7 +23,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   bool _isLoading = false;
 
   final String _apiKey = '';
-
   Future<void> _sendToChatGPT(String userMessage) async {
     const String apiUrl = "https://api.openai.com/v1/chat/completions";
 

@@ -29,7 +29,6 @@ class WordService {
         return {
           'word': data['word'] ?? '단어 없음',
           'description': data['meaning'] ?? '설명 없음',
-          'level': data['level'] ?? '레벨 없음',
         };
       } else {
         throw Exception('서버 오류: ${response.statusCode}');
