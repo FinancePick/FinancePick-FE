@@ -80,9 +80,9 @@ class _QuizDetailScreenState extends State<QuizDetailScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
-          "${widget.level} Quiz",
-          style: const TextStyle(
+        title: const Text(
+          "기초 다지기 Quiz",
+          style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),

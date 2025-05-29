@@ -165,4 +165,39 @@ class ApiService {
       throw Exception('오류 발생: $e');
     }
   }
+
+  // 3. 구글 로그인
+  Future<bool> googleLogin(String idToken) async {
+    final url = Uri.parse('$baseUrl/google-login');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': idToken}),
+      );
+
+      print("서버 응답 상태 코드: ${response.statusCode}");
+      print("서버 응답 메시지: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+        final email = data['email']; // 서버에서 email 응답을 줘야 함
+
+        // SharedPreferences에 토큰과 이메일 저장
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        await prefs.setString('user_email', email);
+
+        print("구글 로그인 성공. 저장된 이메일: $email");
+        return true;
+      } else {
+        print("구글 로그인 실패: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("구글 로그인 중 오류 발생: $e");
+      return false;
+    }
+  }
 }

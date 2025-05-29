@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'quiz_detail_screen.dart';
 import 'vocabulary_screen.dart'; // 단어장 화면 import
+import 'quiz_scenario_screen.dart';
 
 class QuizScreen extends StatelessWidget {
   const QuizScreen({super.key});
@@ -106,12 +107,21 @@ class QuizScreen extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => QuizDetailScreen(level: level),
-              ),
-            );
+            if (level == "기초 다지기") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QuizDetailScreen(level: level),
+                ),
+              );
+            } else if (level == "실전 적용하기") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ScenarioQuizScreen(),
+                ),
+              );
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black,
