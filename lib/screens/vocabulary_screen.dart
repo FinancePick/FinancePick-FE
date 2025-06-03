@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/word_list_service.dart';
 
-// 서버 사이드 페이징 단어장 화면
+// 서버 사이드 페이징 단어장 화면 (체크박스 기능 추가)
 class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
 
@@ -15,10 +16,54 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   late Future<VocabPage> _futurePage;
   final WordService _service = WordService();
 
+  // 즐겨찾기 관리를 위한 변수들
+  Set<String> _favoriteWords = {};
+  bool _isLoadingFavorites = true;
+
   @override
   void initState() {
     super.initState();
+    _loadFavorites();
     _loadPage();
+  }
+
+  // SharedPreferences에서 즐겨찾기 단어들 로드
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favoriteList = prefs.getStringList('favorite_words') ?? [];
+    setState(() {
+      _favoriteWords = favoriteList.toSet();
+      _isLoadingFavorites = false;
+    });
+  }
+
+  // 즐겨찾기 상태 토글
+  Future<void> _toggleFavorite(String wordId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      if (_favoriteWords.contains(wordId)) {
+        _favoriteWords.remove(wordId);
+      } else {
+        _favoriteWords.add(wordId);
+      }
+    });
+
+    // SharedPreferences에 저장
+    await prefs.setStringList('favorite_words', _favoriteWords.toList());
+
+    // 스낵바로 피드백 제공
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_favoriteWords.contains(wordId)
+            ? '나만의 단어장에 추가되었습니다'
+            : '나만의 단어장에서 제거되었습니다'),
+        duration: const Duration(seconds: 1),
+        backgroundColor:
+            _favoriteWords.contains(wordId) ? Colors.green : Colors.grey,
+      ),
+    );
   }
 
   void _loadPage() {
@@ -86,32 +131,57 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             ),
             itemBuilder: (context, index) {
               final w = words[index];
+              final wordId = w.id.toString() ??
+                  '${w.term}_$index'; // ID가 있으면 사용, 없으면 임시 ID 생성
+              final isFavorite = _favoriteWords.contains(wordId);
+
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 110,
-                    child: Text(
-                      w.term,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                        height: 1.4,
+                  // 체크박스 추가 - 위쪽 정렬을 위해 패딩 조정
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Checkbox(
+                        value: isFavorite,
+                        onChanged: _isLoadingFavorites
+                            ? null
+                            : (bool? value) => _toggleFavorite(wordId),
+                        activeColor: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                   ),
-                  // 단어와 의미 사이 간격 추가
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
+                  // 단어와 뜻을 세로로 배치
                   Expanded(
-                    child: Text(
-                      w.meaning,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
-                        height: 2,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          w.term,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          w.meaning,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

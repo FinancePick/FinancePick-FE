@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'quiz_detail_screen.dart';
 import 'vocabulary_screen.dart'; // 단어장 화면 import
 import 'quiz_scenario_screen.dart';
+import 'my_vocabulary_screen.dart';
 
 class QuizScreen extends StatelessWidget {
   const QuizScreen({super.key});
@@ -40,6 +41,7 @@ class QuizScreen extends StatelessWidget {
 
             // 👉 단어장 배너 추가 부분
             _buildVocabularyBanner(context),
+            _buildMyVocabularyBanner(context),
 
             const SizedBox(height: 24),
             const Text(
@@ -177,4 +179,44 @@ class QuizScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// 🔹 나만의 단어장 배너 위젯
+Widget _buildMyVocabularyBanner(BuildContext context) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => const MyVocabularyScreen()), // 나만의 단어장 화면
+      );
+    },
+    child: Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.yellow.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.yellow.shade700),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.star_border, size: 28, color: Colors.amber),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "나만의 단어장",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right),
+        ],
+      ),
+    ),
+  );
 }
