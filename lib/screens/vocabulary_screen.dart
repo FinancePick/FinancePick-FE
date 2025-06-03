@@ -25,6 +25,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     super.initState();
     _loadFavorites();
     _loadPage();
+    _service.printMyWordbooks();
   }
 
   // SharedPreferences에서 즐겨찾기 단어들 로드
@@ -35,6 +36,42 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       _favoriteWords = favoriteList.toSet();
       _isLoadingFavorites = false;
     });
+  }
+
+  Future<void> _createWordbookIfNeeded() async {
+    try {
+      await _service.getMyWordbookIdOrThrow();
+      // 이미 단어장이 있으면 안내
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('이미 단어장이 존재합니다'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } catch (_) {
+      // 단어장이 없으면 생성 시도
+      try {
+        final newId = await _service.createMyWordbook();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('단어장이 생성되었습니다 (ID: $newId)'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        debugPrint('❌ 단어장 생성 실패: $e');
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('단어장 생성에 실패했습니다'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   // 즐겨찾기 상태 토글
@@ -49,10 +86,27 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       }
     });
 
-    // SharedPreferences에 저장
     await prefs.setStringList('favorite_words', _favoriteWords.toList());
 
-    // 스낵바로 피드백 제공
+    // ✅ 서버에도 반영
+    try {
+      final idInt = int.tryParse(wordId);
+      if (idInt != null) {
+        if (_favoriteWords.contains(wordId)) {
+          await _service.addWordToMyWordbook(idInt);
+          debugPrint('✅ 서버 단어장에 단어 추가 성공 (ID: $idInt)');
+        } else {
+          await _service.removeWordFromMyWordbook(idInt);
+          debugPrint('✅ 서버 단어장에서 단어 제거 성공 (ID: $idInt)');
+        }
+      } else {
+        debugPrint('⚠️ wordId 파싱 실패: $wordId');
+      }
+    } catch (e) {
+      debugPrint('❌ 서버 단어장 반영 실패: $e');
+    }
+
+    // ✅ 스낵바 표시
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -103,6 +157,14 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             fontSize: 24,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            color: Colors.black,
+            tooltip: '단어장 생성',
+            onPressed: _createWordbookIfNeeded,
+          ),
+        ],
         centerTitle: false,
       ),
       body: FutureBuilder<VocabPage>(
