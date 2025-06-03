@@ -28,7 +28,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     _service.printMyWordbooks();
   }
 
-  // SharedPreferences에서 즐겨찾기 단어들 로드
   Future<void> _loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final favoriteList = prefs.getStringList('favorite_words') ?? [];
@@ -74,7 +73,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
     }
   }
 
-  // 즐겨찾기 상태 토글
   Future<void> _toggleFavorite(String wordId) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -88,7 +86,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
     await prefs.setStringList('favorite_words', _favoriteWords.toList());
 
-    // ✅ 서버에도 반영
+    // ✅ 서버 반영
     try {
       final idInt = int.tryParse(wordId);
       if (idInt != null) {
@@ -157,14 +155,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             fontSize: 24,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            color: Colors.black,
-            tooltip: '단어장 생성',
-            onPressed: _createWordbookIfNeeded,
-          ),
-        ],
         centerTitle: false,
       ),
       body: FutureBuilder<VocabPage>(

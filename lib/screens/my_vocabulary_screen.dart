@@ -197,19 +197,6 @@ class _MyVocabularyScreenState extends State<MyVocabularyScreen> {
           ),
         ),
         centerTitle: false,
-        actions: [
-          if (_favoriteWords.isNotEmpty && !_isLoading)
-            IconButton(
-              onPressed: _clearAllFavorites,
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              tooltip: '전체 삭제',
-            ),
-          IconButton(
-            onPressed: _loadFavoriteWords,
-            icon: const Icon(Icons.refresh, color: Colors.black),
-            tooltip: '새로고침',
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
