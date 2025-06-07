@@ -95,7 +95,6 @@ class WordService {
     return VocabPage.fromJson(jsonMap);
   }
 
-  /// 단어장 ID가 없으면 예외를 던짐
   Future<int> getMyWordbookIdOrThrow() async {
     if (_myWordbookId != null) return _myWordbookId!;
 
@@ -208,10 +207,6 @@ class WordService {
       'Content-Type': 'application/json',
     });
 
-    // ✅ 여기에 디버그 프린트 추가
-    debugPrint('📥 응답 코드: ${resp.statusCode}');
-    debugPrint('📥 응답 본문: ${utf8.decode(resp.bodyBytes)}');
-
     if (resp.statusCode != 200) {
       throw Exception('나의 단어장 조회 실패');
     }
@@ -220,21 +215,5 @@ class WordService {
         jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
     final words = data['words'] as List<dynamic>;
     return words.map((e) => Word.fromJson(e as Map<String, dynamic>)).toList();
-  }
-
-  Future<void> debugPrintMyWordbookWords() async {
-    try {
-      final words = await fetchWordsInMyWordbook();
-      if (words.isEmpty) {
-        debugPrint('📭 나의 단어장에는 단어가 없습니다.');
-      } else {
-        debugPrint('📚 나의 단어장에 있는 단어 목록:');
-        for (var word in words) {
-          debugPrint('- ${word.id}: ${word.term} (${word.meaning})');
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ 단어장 목록 조회 중 오류 발생: $e');
-    }
   }
 }

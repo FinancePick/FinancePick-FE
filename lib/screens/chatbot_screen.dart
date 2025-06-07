@@ -40,7 +40,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         body: jsonEncode({
           "model": "gpt-3.5-turbo",
           "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {
+              "role": "system",
+              "content":
+                  "너는 경제·금융·주식 용어를 설명하는 도우미야. 모든 질문에 대해 반드시 경제 분야로 제한하여 답해. 각 응답의 맨 앞에 '한 줄 요약:'으로 시작하는 요약 문장을 추가해줘."
+            },
             {"role": "user", "content": userMessage},
           ],
           "max_tokens": 2000,

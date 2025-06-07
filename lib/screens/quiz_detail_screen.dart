@@ -143,16 +143,9 @@ class _QuizDetailScreenState extends State<QuizDetailScreen> {
   // 제출 버튼
   Widget _buildSubmitButton(Map<String, dynamic> question) {
     return ElevatedButton(
-      onPressed: () async {
+      onPressed: () {
         _processAnswer(question);
-
-        // 레벨 업 로직 추가
-        if (correctAnswers >= 8 && widget.level != "Professional") {
-          bool success = await userService.levelUp();
-          _showResultDialog(levelUpSuccess: success);
-        } else {
-          _showResultDialog(levelUpSuccess: false);
-        }
+        _showResultDialog(); // 바로 결과 표시
       },
       style: _buttonStyle(),
       child: const Text(
@@ -171,17 +164,14 @@ class _QuizDetailScreenState extends State<QuizDetailScreen> {
     }
   }
 
-  // 결과 다이얼로그 (UI 변경 없음)
-  void _showResultDialog({required bool levelUpSuccess}) {
-    final nextLevel = _getNextLevel(widget.level);
-
+  // 결과 다이얼로그
+  void _showResultDialog() {
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        elevation: 0,
         backgroundColor: Colors.transparent,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
@@ -198,39 +188,17 @@ class _QuizDetailScreenState extends State<QuizDetailScreen> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 '결과',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
                 "$correctAnswers 점",
-                style: const TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style:
+                    const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
-              if (levelUpSuccess && widget.level != "Professional")
-                Text(
-                  "$nextLevel 으로 레벨 업!",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.black54,
-                  ),
-                )
-              else
-                const Text(
-                  '레벨업 실패 ...',
-                  style: TextStyle(fontSize: 18, color: Colors.black54),
-                ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
@@ -243,30 +211,13 @@ class _QuizDetailScreenState extends State<QuizDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
-                child: const Text(
-                  '퀴즈 메인으로',
-                  style: TextStyle(fontSize: 14),
-                ),
+                child: const Text('퀴즈 메인으로', style: TextStyle(fontSize: 14)),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  // 다음 레벨 반환
-  String _getNextLevel(String currentLevel) {
-    switch (currentLevel) {
-      case "Beginner":
-        return "Medium";
-      case "Medium":
-        return "Advanced";
-      case "Advanced":
-        return "Professional";
-      default:
-        return "Professional";
-    }
   }
 
   // 버튼 스타일

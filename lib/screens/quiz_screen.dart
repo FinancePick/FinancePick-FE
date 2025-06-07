@@ -120,7 +120,7 @@ class QuizScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ScenarioQuizScreen(),
+                  builder: (context) => ScenarioQuizScreen(level: level),
                 ),
               );
             }
