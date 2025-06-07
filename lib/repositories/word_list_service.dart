@@ -57,7 +57,7 @@ class VocabPage {
 
 /// 단어장 API 호출 서비스
 class WordService {
-  static const _baseUrl = 'http://138.2.123.184/api';
+  static const _baseUrl = 'http://10.0.2.2:8080/api';
   int? _myWordbookId; // 유저당 하나의 단어장 ID
 
   /// SharedPreferences 에 저장된 JWT 토큰을 반환합니다.

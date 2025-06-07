@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
-  final String levelUpUrl = 'http://138.2.123.184/api/auth/level-up';
+  final String levelUpUrl = 'http://10.0.2.2:8080/api/auth/level-up';
 
   // 레벨 업 요청
   Future<bool> levelUp() async {

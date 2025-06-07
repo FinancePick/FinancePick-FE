@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/quiz_word.dart';
 
 class QuizService {
-  final String baseUrl = 'http://138.2.123.184/api/word/quiz';
+  final String baseUrl = 'http://10.0.2.2:8080/api/word/quiz';
 
   // 사용자 레벨에 맞는 퀴즈 데이터를 가져오는 함수
   Future<List<dynamic>> fetchQuizData() async {
@@ -33,5 +34,14 @@ class QuizService {
     } catch (e) {
       throw Exception('오류 발생: $e');
     }
+  }
+
+  // QuizWord 모델로 파싱된 퀴즈 단어 리스트 반환
+  Future<List<QuizWord>> parsedQuizWords() async {
+    final rawList = await fetchQuizData();
+    return rawList
+        .map<QuizWord>((e) => QuizWord.fromJson(e))
+        .where((e) => e.term.isNotEmpty)
+        .toList();
   }
 }

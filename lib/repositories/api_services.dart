@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final String baseUrl = 'http://138.2.123.184/api/auth'; // 서버 URL
+  final String baseUrl = 'http://10.0.2.2:8080/api/auth'; // 서버 URL
 
   // 1. 로그인
   Future<bool> login(String username, String password) async {

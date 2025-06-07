@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WordService {
-  final String baseUrl = 'http://138.2.123.184/api/word';
+  final String baseUrl = 'http://10.0.2.2:8080/api/word';
 
   // 오늘의 단어를 가져오는 함수
   Future<Map<String, String>> fetchTodayWords() async {

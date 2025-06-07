@@ -48,7 +48,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
       return;
     }
 
-    final url = Uri.parse('http://138.2.123.184/api/auth/myService');
+    final url = Uri.parse('http://10.0.2.2:8080/api/auth/myService');
 
     try {
       final response = await http.get(
