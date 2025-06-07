@@ -17,8 +17,7 @@ class ScenarioQuizScreen extends StatefulWidget {
 class _ScenarioQuizScreenState extends State<ScenarioQuizScreen> {
   final UserService userService = UserService();
   final QuizService quizService = QuizService();
-  final String openAiApiKey =
-      'REMOVED_SECRET';
+  final String openAiApiKey = '';
 
   int currentIndex = 0;
   int correctAnswers = 0;
